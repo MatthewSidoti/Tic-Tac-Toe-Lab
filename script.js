@@ -7,6 +7,7 @@ let tie = false;
 
 const squareEls = document.querySelectorAll('.sqr');
 const messageEl = document.getElementById('message');
+const resetButtonEl = document.getElementById('reset-button');
 
 console.log(squareEls);
 console.log(messageEl);
@@ -100,3 +101,9 @@ function checkForTie() {
 squareEls.forEach(squareEl => {
   squareEl.addEventListener('click', handleClick);
 });
+
+resetButtonEl.addEventListener('click', resetGame);
+
+function resetGame() {
+  init();  
+}
