@@ -1,49 +1,38 @@
-//1) Define the required variables used to track the state of the game.
-const board =["", "", ""
-  "", "", "",
-  "", "". "",
-]
-const turn = ' '
-const winner = ;
-const tie = ;
-//2) Store cached element references.
+
+const board = ["", "", "", "", "", "", "", "", ""];
+let turn = ' ';
+let winner = false;
+let tie = false;
+
+
 const squareEls = document.querySelectorAll('.sqr');
 const messageEl = document.getElementById('message');
 
-console.log(squareEls)
-console.log(messageEl)
-//3) Upon loading, the game state should be initialized, and a function should 
-//   be called to render this game state.
+console.log(squareEls);
+console.log(messageEl);
+
+
 function init() {
   console.log('Initializing game...');
-  
- 
-  board = ['', '', '', '', '', '', '', '', ''];
-
-  turn = 'X';
   winner = false;
   tie = false;
-
- 
+  turn = 'X';
+  board.fill('');
   render();
 }
 
-// d. Call init function when app loads
+
 init();
 
-//4) The state of the game should be rendered to the user.
-function render () {
 
+function render() {
+  updateBoard();
+  messageEl.textContent = updateMessage(winner, tie);
 }
 
 function updateBoard() {
-  const squareEls = document.querySelectorAll('.sqr');
-  
   board.forEach((value, index) => {
-    
     squareEls[index].textContent = value;
-    
-    
     squareEls[index].classList.remove('winner');
     
     if (value === 'X' || value === 'O') {
@@ -56,21 +45,58 @@ function updateBoard() {
 
 function updateMessage(winner, tie) {
   if (!winner && !tie) {
-      return `It is currently the turn of Player ${turn}.` 
+    return `It is currently the turn of Player ${turn}.`;
   } else if (!winner && tie) {
-      return "It's a tie! The game is over.";
+    return "It's a tie! The game is over.";
   } else {
-      return `Player ${turn} wins! The game is over.`;
+    return `Player ${turn === 'X' ? 'O' : 'X'} wins! The game is over.`;
   }
 }
-//5) Define the required constants.
+
+
 const winningCombos = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-  [0, 4, 8], [2, 4, 6]             // Diagonals
+  [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+  [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+  [0, 4, 8], [2, 4, 6]             
 ];
 
 
-//6) Handle a player clicking a square with a `handleClick` function.
+function handleClick(event) {
+  const index = Array.from(squareEls).indexOf(event.target);
+  if (board[index] === '' && !winner) {
+    placePiece(index);
+    checkForWinner();
+    checkForTie();
+    turn = turn === 'X' ? 'O' : 'X';
+    render();
+  }
+}
 
-//7) Create Reset functionality.
+function placePiece(index) {
+  if (board[index] === '') {
+    board[index] = turn;
+    console.log(board);
+    render();
+  }
+}
+
+function checkForWinner() {
+  winningCombos.forEach(combo => {
+    const [a, b, c] = combo;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      winner = true;
+      [a, b, c].forEach(index => squareEls[index].classList.add('winner'));
+    }
+  });
+}
+
+function checkForTie() {
+  if (board.every(square => square !== '') && !winner) {
+    tie = true;
+  }
+}
+
+
+squareEls.forEach(squareEl => {
+  squareEl.addEventListener('click', handleClick);
+});
